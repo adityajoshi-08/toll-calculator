@@ -38,9 +38,9 @@ func (ia *InvoiceAggregator) CalculateInvoice(obuID int) (types.Invoice, error) 
 		return types.Invoice{}, fmt.Errorf("error getting distance for OBU ID %d: %v", obuID, err)
 	}
 	invoice := &types.Invoice{
-		OBUID: obuID,
+		OBUID:         obuID,
 		TotalDistance: dist,
-		TotalAmount: dist * basePricePerKm,
+		TotalAmount:   dist * basePricePerKm,
 	}
 	return *invoice, nil
 }

@@ -18,11 +18,11 @@ func NewLogMiddleware(next Aggregator) *LogMiddleware {
 func (lm *LogMiddleware) CalculateInvoice(obuID int) (invoice types.Invoice, err error) {
 	defer func(start time.Time) {
 		logrus.WithFields(logrus.Fields{
-			"took": time.Since(start),
-			"err":  err,
-			"obuID": obuID,
+			"took":          time.Since(start),
+			"err":           err,
+			"obuID":         obuID,
 			"totalDistance": invoice.TotalDistance,
-			"totalAmount": invoice.TotalAmount,
+			"totalAmount":   invoice.TotalAmount,
 		}).Info("Calculate Invoice")
 	}(time.Now())
 

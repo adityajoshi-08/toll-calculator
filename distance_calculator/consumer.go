@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"time"
 	"toll-calculator/aggregator/client"
@@ -14,10 +15,11 @@ type KafkaConsumer struct {
 	consumer    *kafka.Consumer
 	isRunning   bool
 	calcService CalculatorServicer
-	aggClient   *client.Client
+	// aggClient   *client.HttpClient
+	aggClient client.Client
 }
 
-func NewKafkaConsumer(topic string, svc CalculatorServicer, cl *client.Client) (*KafkaConsumer, error) {
+func NewKafkaConsumer(topic string, svc CalculatorServicer, cl client.Client) (*KafkaConsumer, error) {
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": "localhost",
 		"group.id":          "myGroup",
@@ -63,12 +65,12 @@ func (kc *KafkaConsumer) readMessageLoop() {
 			continue
 		}
 		// _ = distance
-		req := types.Distance{
+		req := &types.AggregateRequest {
 			Value: distance,
 			Unix:  time.Now().UnixNano(),
-			OBUID: data.OBUID,
+			OBUID: int32(data.OBUID),
 		}
-		if err := kc.aggClient.AggregateInvoice(req); err != nil {
+		if err := kc.aggClient.Aggregate(context.Background(), req); err != nil {
 			logrus.Errorf("aggregator error: %v", err)
 			continue
 		}
